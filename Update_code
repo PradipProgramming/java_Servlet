@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Form</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body bgcolor="pink">
+    <center><h1>Update Page</h1>
+   <form action="NewServlet" method="post">
+    Enter the ID: <input type="text" name="l_id"><br><br>
+   <br><br>
+   Name: <input type="text" name="l_name"><br><br>
+    Contact: <input type="tel" name="l_contact"><br><br>
+    Address: <input type="text" name="l_address"><br><br>
+    Email: <input type="email" name="l_email"><br><br>
+    Password: <input type="password" name="l_password"><br><br>
+    Skill: <input type="text" name="l_skill"><br><br>
+    City:<select type="text" name="l_city">
+                <option>Kolkata</option>
+                <option>Mumbai</option>
+                <option>Delhi</option>
+                <option>Burdwan</option>
+                <option>UP</option>
+    </select><br><br>
+    <input type="radio" name="l_gender" value="male"> Male
+    <input type="radio" name="l_gender" value="female"> Female
+    <input type="radio" name="l_gender" value="other"> Other
+    <br><br>
+    <button>UPDATE</button>
+    
+    <input type="reset" value="cancel">
+   </form></center>
+</body>
+</html>
+   
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class NewServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<title>Data Update</title>");
+        out.println("</head>");
+        out.println("<body>");
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");  
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/university","root","");
+            
+            String ID = request.getParameter("l_id");
+            int value=Integer.parseInt(ID);
+            String name = request.getParameter("l_name");
+            String contact = request.getParameter("l_contact");
+            int cont=Integer.parseInt(contact);
+            String address = request.getParameter("l_address");
+            String email = request.getParameter("l_email");
+            String password = request.getParameter("l_password");
+            String skill = request.getParameter("l_skill");
+            String city = request.getParameter("l_city");
+            String gender = request.getParameter("l_gender");
+            
+            String query = ("UPDATE form SET l_name=?, l_contact=?, l_address=?, l_email=?, l_password=?, l_skill=?, l_city=?, l_gender=? WHERE l_Id=? ");
+            PreparedStatement stmt = con.prepareStatement(query);
+            
+            stmt.setString(1, name);
+            stmt.setInt(2, cont);
+            stmt.setString(3, address);
+            stmt.setString(4, email);
+            stmt.setString(5, password);
+            stmt.setString(6, skill);
+            stmt.setString(7, city);
+            stmt.setString(8, gender);
+            stmt.setInt(9, value);
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                out.println("<p>Data updated successfully!</p>");
+            } else {
+                out.println("<p>Failed to update data.</p>");
+            }
+
+            stmt.close();
+            con.close();
+        } catch (ClassNotFoundException | SQLException e) {
+            out.println(e);
+        }
+
+        out.println("</body>");
+        out.println("</html>");
+    }
+}
