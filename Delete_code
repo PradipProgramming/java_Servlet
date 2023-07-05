@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Form</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body bgcolor="pink">
+    <center><h1>Delete Page</h1>
+   <form action="NewServlet" method="post">
+    Enter ID number: <input type="text" name="l_Id"><br><br>
+   <br><br>
+   
+    <button>DELETE</button>
+    
+    <input type="reset" value="cancel">
+   </form></center>
+</body>
+</html>
+   
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+
+public class NewServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+                try{ String url = "jdbc:mysql://localhost/university";
+                   Class.forName("com.mysql.jdbc.Driver");  
+                   Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/university","root","");
+                   Statement stmt = con.createStatement();
+                   String ID=request.getParameter("l_Id"); 
+                   int result = stmt.executeUpdate("delete from form where l_Id="+ID); 
+                   if (result > 0){
+                     try (PrintWriter out = response.getWriter()) {
+                    /* TODO output your page here. You may use following sample code. */
+                        out.println("<!DOCTYPE html>");
+                        out.println("<html>");
+                        out.println("<head>");
+                        out.println("<title>Servlet NewServlet</title>");            
+                        out.println("</head>");
+                        out.println("<body>");
+                        out.println("<h1>Delete Sucessfull</h1>");
+                        out.println("<h1>Servlet NewServlet at " + request.getContextPath() + "</h1>");
+                        out.println("</body>");
+                        out.println("</html>");
+                    }
+                 con.close();
+                }else{
+                     try (PrintWriter out = response.getWriter()) {
+                    /* TODO output your page here. You may use following sample code. */
+                        out.println("<!DOCTYPE html>");
+                        out.println("<html>");
+                        out.println("<head>");
+                        out.println("<title>Servlet NewServlet</title>");            
+                        out.println("</head>");
+                        out.println("<body>");
+                        out.println("<h1>Delete UnSucessfull</h1>");
+                        out.println("<h1>Servlet NewServlet at " + request.getContextPath() + "</h1>");
+                        out.println("</body>");
+                        out.println("</html>");
+                    }
+                    con.close();
+                 }
+            }catch(ClassNotFoundException e){
+                PrintWriter out = response.getWriter();
+                    out.println(e);
+           }catch (SQLException e) {
+               PrintWriter out = response.getWriter();
+                    out.println(e);
+        }
+        
+        }
+    }
+
+
