@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Form</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body bgcolor="pink">
+    <center><h1>Display Page</h1>
+   <form action="NewServlet" method="post">
+    Enter the ID: <input type="text" name="l_id"><br><br>
+   <br><br>
+    <button>DISPLAY</button>
+    
+    <input type="reset" value="cancel">
+   </form></center>
+</body>
+</html>
+   
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class NewServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException{
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+        out.println("<html>");
+        out.println("<head>");
+        out.println("<title>Database Data Display</title>");
+        out.println("</head>");
+        out.println("<body>");
+        try{
+            Class.forName("com.mysql.jdbc.Driver");  
+            Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/university","root","");
+            Statement stmt=con.createStatement();
+            String ID=request.getParameter("l_id");
+            ResultSet rs=stmt.executeQuery("select * from form where l_id="+ID);
+            while(rs.next()){  
+                 out.println("<p>Name: " + rs.getString("l_name") + ", "
+                        + "<br> Contact: " + rs.getString("l_contact") + ", "
+                        + "<br> Address: " + rs.getString("l_address") +","
+                        + "<br> Email: " + rs.getString("l_email")+","
+                        + "<br> Password: " + rs.getString("l_password") + ","
+                        + "<br> Skill: " + rs.getString("l_skill")+","
+                        + "<br> City: " + rs.getString("l_city") +","
+                        + "<br> Gender: " +rs.getString("l_gender") + "</p>");
+            }
+            out.println("</body>");
+            out.println("</html>");
+            rs.close();
+            stmt.close();
+            con.close();  
+            
+        }catch (ClassNotFoundException | SQLException e) {
+            out.println(e);
+        }
+
+    }
+}
