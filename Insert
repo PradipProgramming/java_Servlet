@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Form</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body bgcolor="pink">
+    <center><h1>My Form</h1>
+   <form action="NewServlet" method="post">
+    Name: <input type="text" name="l_name"><br><br>
+    Contact: <input type="tel" name="l_contact"><br><br>
+    Address: <input type="text" name="l_address"><br><br>
+    Email: <input type="email" name="l_email"><br><br>
+    Password: <input type="password" name="l_password"><br><br>
+    Skill: <input type="text" name="l_skill"><br><br>
+    City:<select type="text" name="l_city">
+                <option>Kolkata</option>
+                <option>Mumbai</option>
+                <option>Delhi</option>
+                <option>Burdwan</option>
+                <option>UP</option>
+    </select><br><br>
+    <input type="radio" name="l_gender" value="male"> Male
+    <input type="radio" name="l_gender" value="female"> Female
+    <input type="radio" name="l_gender" value="other"> Other
+    <br><br>
+    <button onclick="insert()">INSERT</button>
+    <input type="reset" value="cancel">
+   </form></center>
+</body>
+</html>
+   
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.PreparedStatement;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class NewServlet extends HttpServlet {
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+                //   response.setContentType("text/html;charset=UTF-8")
+        
+            try{
+                String url = "jdbc:mysql://localhost/university";
+                Class.forName("com.mysql.jdbc.Driver");  
+                Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/university","root","");
+                Statement stmt = con.createStatement();
+                String name=request.getParameter("l_name");
+                String contact=request.getParameter("l_contact");
+                String address=request.getParameter("l_address");
+                String email=request.getParameter("l_email");
+                String password=request.getParameter("l_password");
+                String skill=request.getParameter("l_skill");
+                String city=request.getParameter("l_city");
+                String gender=request.getParameter("l_gender");
+                int result = stmt.executeUpdate("insert into form(l_name,l_contact,l_address,l_email,l_password,l_skill,l_city,l_gender) values('"+name+"','"+contact+"','"+address+"','"+email+"','"+password+"','"+skill+"','"+city+"','"+gender+"')");
+                /*String sql = "INSERT INTO form (l_name,l_contact,l_address,l_email,l_password,l_skill,l_city,l_gender) VALUES (?,?,?,?,?,?,?,?)";
+                PreparedStatement stmt= con.prepareStatement(sql);
+                // Set the parameter values
+                stmt.setString(1, name);
+                stmt.setString(2, contact);
+                stmt.setString(3, address);
+                stmt.setString(4, email);
+                stmt.setString(5, password);
+                stmt.setString(6, skill);
+                stmt.setString(7, city);
+                stmt.setString(8, gender);
+                // Execute the insert query
+                int result = stmt.executeUpdate(sql);*/
+                
+                
+                if (result > 0){
+                    response.getWriter().println("Data inserted successfully");
+                    con.close();
+                }else{
+                    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); 
+                    con.close();
+                 }
+            }catch(ClassNotFoundException e){
+                PrintWriter out = response.getWriter();
+                    out.println(e);
+           }catch (SQLException e) {
+               PrintWriter out = response.getWriter();
+                    out.println(e);
+        }
+        
+
+    }
+   
+}
